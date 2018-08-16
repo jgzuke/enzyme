@@ -2173,6 +2173,31 @@ describe('shallow', () => {
       expect(wrapper.state()).to.eql({ id: 'foo' });
       expect(() => wrapper.setState({ id: 'bar' }, 1)).to.throw(Error);
     });
+
+    it('should preserve the receiver', () => {
+      class Comp extends React.Component {
+        constructor(...args) {
+          super(...args);
+
+          this.state = {
+            key: '',
+          };
+
+          this.instanceFunction = () => this.setState(() => ({ key: 'value' }));
+        }
+
+        componentDidMount() {
+          this.instanceFunction();
+        }
+
+        render() {
+          const { key } = this.state;
+          return null;
+        }
+      }
+
+      expect(shallow(<Comp />).isEmpty()).to.equal(true);
+    });
   });
 
   describe('.is(selector)', () => {
